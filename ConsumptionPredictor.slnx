@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Application/Application.csproj" Id="ab689d2c-fcba-490b-9268-44d83cd417a3" />
+  <Project Path="ConsumptionPredictor/ConsumptionPredictor.csproj" />
+</Solution>
