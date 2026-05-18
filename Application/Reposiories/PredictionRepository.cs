@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Application.Enums;
 
-namespace Application.Reposiories
+namespace Application.Repositories
 {
-    internal class PredictionRepository
+    // Singleton para persistencia en memoria del modo seleccionado
+    public sealed class RepositorioPrediccion
     {
-        //singleton
+        private RepositorioPrediccion() { }
+
+        public static RepositorioPrediccion Instancia { get; } = new();
+
+        public ModoPrediccion ModoActual { get; set; } = ModoPrediccion.PROMEDIO_MOVIL_SIMPLE;
     }
 }

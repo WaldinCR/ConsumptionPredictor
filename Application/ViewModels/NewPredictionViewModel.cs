@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Application.ViewModels;
+using System.ComponentModel.DataAnnotations;
 
-namespace Application.ViewModels
+public class NuevaPrediccionViewModel
 {
-    internal class NewPredictionViewModel
-    {
-    }
+    [Required(ErrorMessage = "Debe seleccionar un modo de predicción")]
+    public int Modo { get; set; }
+
+    [Required(ErrorMessage = "Debe ingresar los 12 consumos")]
+    [MinLength(12, ErrorMessage = "Se requieren exactamente 12 consumos")]
+    public List<ConsumptionViewModel> Consumos { get; set; } = new();
 }

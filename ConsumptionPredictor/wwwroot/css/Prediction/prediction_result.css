@@ -1,2 +1,85 @@
-﻿body {
+﻿/* /wwwroot/css/Prediction/prediction_result.css */
+.predictor-card {
+    background: #FAF9F6;
+    border-radius: 20px;
+    margin: 40px auto 0 auto;
+    padding: 0;
+    max-width: 540px;
+    box-shadow: 0 3px 16px rgba(43,53,82,0.06);
+}
+
+.predictor-header {
+    background: #182032;
+    color: #fff;
+    border-radius: 20px 20px 0 0;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.3rem;
+    font-weight: bold;
+    letter-spacing: .03em;
+    padding: 1.1rem 2rem;
+}
+
+.predictor-result-main {
+    background: #ffeec2;
+    border-radius: 8px;
+    padding: 1.05em 1.4em;
+    margin-top: 1.7em;
+    margin-bottom: 2.1em;
+    border-left: 5px solid #ecc85c;
+    font-size: 1.15em;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: bold;
+    color: #534e3b;
+    display: flex;
+    align-items: center;
+}
+
+.predictor-table th {
+    color: #183c84;
+    font-weight: bold;
+    font-size: 1.06em;
+}
+
+.predictor-table td {
+    font-weight: 600;
+}
+
+.predictor-action-primary {
+    background: #142B5E;
+    color: #fff !important;
+    border-radius: 11px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.5em 1.7em;
+    margin-right: 10px;
+    border: none;
+}
+
+.predictor-action-black {
+    background: #212121;
+    color: #fff !important;
+    border-radius: 7px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.55em 1.7em;
+    border: none;
+}
+
+.predictor-mode-highlight {
+    background: #fff3d5;
+    padding: .2em .7em;
+    border-radius: 8px;
+    margin-left: 0.5em;
+    border: 1px solid #c1a355;
+    color: #183c84;
+}
+
+.predictor-action-grey {
+    border: 1.3px solid #cdcdcd;
+    background: #fcf7ee;
+    color: #444;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.55em 1.7em;
 }

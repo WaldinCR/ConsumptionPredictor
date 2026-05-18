@@ -1,5 +1,120 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Application.Enums
 @{
+    ViewData["Title"] = "Inicio - Predictor";
+    int modoActual = ViewBag.ModoActual ?? 1;
+
+    var modos = new[] {
+        new { Value = (int)ModoPrediccion.PROMEDIO_MOVIL_SIMPLE, Label = "Promedio Móvil Simple (SMA)" },
+        new { Value = (int)ModoPrediccion.REGRESION_LINEAL, Label = "Regresión Lineal" },
+        new { Value = (int)ModoPrediccion.VARIACION_PORCENTUAL, Label = "Variación Porcentual" },
+        new { Value = (int)ModoPrediccion.DETECCION_TENDENCIA, Label = "Detección de Tendencia" }
+    };
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">⚡ Predictor de Consumo Eléctrico</h1>
+        <p class="lead text-muted">Ingrese los datos históricos de los últimos 12 meses para calcular la predicción</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📋 Registro de Consumo Eléctrico Mensual</h5>
+                    <small>Organizado desde el mes más antiguo al más reciente</small>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="/Prediccion/Calcular" id="formPrediccion">
+
+                        <!-- Selector de modo -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Modo de predicción</label>
+                            <select name="Modo" class="form-select" id="modoSelect">
+                                @foreach (var modo in modos)
+                                {
+                                    if (modoActual == modo.Value)
+                                    {
+                                        <option value="@modo.Value" selected>@modo.Label</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@modo.Value">@modo.Label</option>
+                                    }
+                                }
+                            </select>
+                            <div class="form-text">El modo guardado se carga automáticamente. Puede cambiarlo también desde <a href="/Prediccion/Modos">Modos</a>.</div>
+                        </div>
+
+                        <!-- Toggle entre textarea e inputs -->
+                        <div class="mb-3">
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="tipoIngreso" id="btnTextarea" value="textarea" checked>
+                                <label class="btn btn-outline-secondary" for="btnTextarea">📝 Texto libre</label>
+                                <input type="radio" class="btn-check" name="tipoIngreso" id="btnInputs" value="inputs">
+                                <label class="btn btn-outline-secondary" for="btnInputs">🗂️ Campos individuales</label>
+                            </div>
+                        </div>
+
+                        <!-- Modo textarea -->
+                        <div id="seccionTextarea">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Datos de consumo <span class="text-danger">*</span></label>
+                                <textarea name="DatosIngreso" id="datosTextarea" class="form-control font-monospace"
+                                          rows="14"
+                                          placeholder="2024-01-01, 320.50&#10;2024-02-01, 315.00&#10;2024-03-01, 330.75&#10;... (12 registros)"></textarea>
+                                <div class="form-text">
+                                    Formato: <code>YYYY-MM-DD, consumo_kWh</code> — exactamente <strong>12 filas</strong>.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modo inputs individuales -->
+                        <div id="seccionInputs" style="display:none;">
+                            <input type="hidden" id="datosHidden" name="DatosIngreso" value="" />
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Fecha</th>
+                                            <th>Consumo (kWh)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaInputs">
+                                        @for (int i = 1; i <= 12; i++)
+                                        {
+                                            <tr>
+                                                <td class="text-center text-muted">@i</td>
+                                                <td><input type="date" class="form-control form-control-sm campo-fecha" data-index="@i" /></td>
+                                                <td><input type="number" step="0.01" min="0" class="form-control form-control-sm campo-valor" data-index="@i" placeholder="0.00" /></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        @section Styles {
+                            <link rel="stylesheet" href="~/css/Prediction/prediction_index.css" />
+                        }
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnCalcular">
+                                🔮 Calcular predicción
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Prediction/prediction_index.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/Prediction/prediction_index.js" asp-append-version="true"></script>
 }

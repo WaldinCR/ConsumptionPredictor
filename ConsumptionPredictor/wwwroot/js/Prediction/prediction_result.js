@@ -1,1 +1,1 @@
-﻿
+﻿.fs - 1 { font - size: 2.5rem!important; }

@@ -1,83 +1,83 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Dtos;
+using Application.Enums;
+using Application.Services;
+using Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConsumptionPredictor.Controllers
 {
-    public class PredictionController : Controller
+    public class PrediccionController : Controller
     {
-        // GET: PredictionController
-        public ActionResult Index()
+        private readonly PredictionOrchestratorService _orquestador;
+
+        public PrediccionController(PredictionOrchestratorService orquestador)
         {
-            return View();
+            _orquestador = orquestador;
         }
 
-        // GET: PredictionController/Details/5
-        public ActionResult Details(int id)
+        // GET: /Prediccion/Inicio
+        public IActionResult Inicio()
         {
-            return View();
+            return View("~/Views/Prediction/Home.cshtml");
         }
 
-        // GET: PredictionController/Create
-        public ActionResult Create()
+        // GET: /Prediccion/Modos
+        public IActionResult Modos()
         {
-            return View();
+            var vm = new ModoViewModel(); // Carga el modo según tu lógica si es requerido
+            return View("~/Views/Prediction/Modes.cshtml", vm);
         }
 
-        // POST: PredictionController/Create
+        // POST: /Prediccion/GuardarModo
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult GuardarModo(ModoViewModel vm)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                // Aquí puedes guardar el modo usando tus servicios/repo si lo necesitas
+                TempData["Mensaje"] = "Modo de predicción guardado correctamente.";
+                TempData["TipoMensaje"] = "alert-success";
             }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Inicio");
         }
 
-        // GET: PredictionController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PredictionController/Edit/5
+        // POST: /Prediccion/Calcular
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Calcular(NuevaPrediccionViewModel vm)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                TempData["Mensaje"] = "Por favor corrija los errores del formulario.";
+                TempData["TipoMensaje"] = "alert-danger";
+                return RedirectToAction("Inicio");
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: PredictionController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+            // Map ViewModel to DTOs ("Consumos" debe venir del formulario)
+            var consumos = vm.Consumos.Select(c => new ConsumptionDto
+            {
+                Fecha = DateTime.Parse(c.Fecha),       // ¡Ahora la propiedad Fecha del DTO sí se usa!
+                ValorKwh = c.ValorKwh
+            }).ToList();
 
-        // POST: PredictionController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            // Cálculo de predicción usando el orquestador
+            var resultado = _orquestador.Calcular((ModoPrediccion)vm.Modo, consumos);
+
+            // Puedes mapearlo a un PredictionViewModel si lo necesitas
+            var modeloVista = new PredictionViewModel
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                Metodo = resultado.Metodo,
+                Prediccion = resultado.Prediccion,
+                Tendencia = resultado.Tendencia,
+                Promedio = resultado.Promedio,
+                Pendiente = resultado.Pendiente,
+                PromedioVariacion = resultado.PromedioVariacion,
+                Variaciones = resultado.Variaciones,
+                Aumentos = resultado.Aumentos,
+                Disminuciones = resultado.Disminuciones,
+                Estables = resultado.Estables
+            };
+
+            return View("~/Views/Prediction/Result.cshtml", modeloVista);
         }
     }
 }

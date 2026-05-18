@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dtos
+﻿namespace Application.Dtos
 {
-    internal class ConsumptionDto
+    public class ConsumptionDto
     {
+        public required DateTime Fecha { get; set; }
+        public required decimal ValorKwh { get; set; }
     }
 }

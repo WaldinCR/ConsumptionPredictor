@@ -1,5 +1,150 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Application.ViewModels.PredictionViewModel
 @{
+    ViewData["Title"] = "Resultado";
+    string alertClass = Model.Tendencia is "Alcista" or "Aumentando" ? "alert-danger"
+                      : Model.Tendencia is "Bajista" or "Disminuyendo" ? "alert-success"
+                      : "alert-warning";
+    string icono = Model.Tendencia is "Alcista" or "Aumentando" ? "↑"
+                 : Model.Tendencia is "Bajista" or "Disminuyendo" ? "↓"
+                 : "→";
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Prediction/prediction_result.css" />
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+
+        <div class="card">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span>Resultado de Predicción</span>
+                <span class="badge bg-secondary">@Model.Metodo</span>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="alert @alertClass mb-4">
+                    <strong>Tendencia general:</strong> @icono @Model.Tendencia
+                </div>
+
+                @* ===== SMA ===== *@
+                @if (Model.Metodo.Contains("SMA"))
+                {
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Promedio de los últimos 3 meses</th>
+                                <td class="resultado-valor">@Model.Promedio.ToString("F2") kWh</td>
+                            </tr>
+                            <tr>
+                                <th>Consumo estimado próximo mes</th>
+                                <td class="resultado-valor">@Model.Prediccion.ToString("F2") kWh</td>
+                            </tr>
+                            <tr>
+                                <th>Tendencia</th>
+                                <td><strong>@Model.Tendencia</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+                @* ===== Regresión Lineal ===== *@
+                @if (Model.Metodo.Contains("Regresión"))
+                {
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Consumo estimado — Mes 13</th>
+                                <td class="resultado-valor">@Model.Prediccion.ToString("F2") kWh</td>
+                            </tr>
+                            <tr>
+                                <th>Pendiente (m)</th>
+                                <td><strong>@Model.Pendiente.ToString("F4")</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Tendencia</th>
+                                <td><strong>@Model.Tendencia</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+                @* ===== Variación Porcentual ===== *@
+                @if (Model.Metodo.Contains("Variación") && Model.Variaciones.Count > 0)
+                {
+                    <table class="table table-bordered mb-3">
+                        <thead class="table-dark">
+                            <tr><th>Mes</th><th>Variación</th></tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Variaciones.Count; i++)
+                            {
+                                <tr>
+                                    <td>Mes @(i + 1)</td>
+                                    <td>
+                                        @if (i == 0)
+                                        {
+                                            <span class="text-muted">n/a</span>
+                                        }
+                                        else if (double.IsNaN(Model.Variaciones[i]))
+                                        {
+                                            <span class="text-danger">No calculable (anterior = 0)</span>
+                                        }
+                                        else
+                                        {
+                                            <strong>@Model.Variaciones[i].ToString("F2")%</strong>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Promedio general de variación</th>
+                                <td class="resultado-valor">@Model.PromedioVariacion.ToString("F2")%</td>
+                            </tr>
+                            <tr>
+                                <th>Tendencia</th>
+                                <td><strong>@Model.Tendencia</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+                @* ===== Detección de Tendencia ===== *@
+                @if (Model.Metodo.Contains("Detección"))
+                {
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Meses que subieron ↑</th>
+                                <td class="resultado-valor text-danger">@Model.Aumentos</td>
+                            </tr>
+                            <tr>
+                                <th>Meses que bajaron ↓</th>
+                                <td class="resultado-valor text-success">@Model.Disminuciones</td>
+                            </tr>
+                            <tr>
+                                <th>Meses estables →</th>
+                                <td class="resultado-valor text-warning">@Model.Estables</td>
+                            </tr>
+                            <tr>
+                                <th>Tendencia general</th>
+                                <td><strong>@Model.Tendencia</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+
+                <div class="d-flex gap-2 mt-4">
+                    <a href="/Prediccion/Inicio" class="btn btn-primary">Nueva Predicción</a>
+                    <a href="/Prediccion/Modos" class="btn btn-outline-secondary">Cambiar Modo</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

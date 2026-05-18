@@ -1,5 +1,51 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Application.ViewModels.ModoViewModel
+@using Application.Enums
 @{
+    ViewData["Title"] = "Modos";
+    int modoActual = Model?.ModoSeleccionado ?? 1;
+
+    var modos = new[] {
+        new { Value = (int)ModoPrediccion.PROMEDIO_MOVIL_SIMPLE, Label = "Promedio Móvil Simple (SMA)" },
+        new { Value = (int)ModoPrediccion.REGRESION_LINEAL, Label = "Regresión Lineal" },
+        new { Value = (int)ModoPrediccion.VARIACION_PORCENTUAL, Label = "Variación Porcentual" },
+        new { Value = (int)ModoPrediccion.DETECCION_TENDENCIA, Label = "Detección de Tendencia" }
+    };
 }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Prediction/prediction_modes.css" />
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post" action="/Prediccion/GuardarModo" id="formModo">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Modo de predicción</label>
+                            <select name="ModoSeleccionado" class="form-select" id="modoSelect">
+                                @foreach (var modo in modos)
+                                {
+                                    if (modoActual == modo.Value)
+                                    {
+                                        @:
+                                        <option value="@modo.Value" selected>@modo.Label</option>
+                                    }
+                                    else
+                                    {
+                                        @:
+                                        <option value="@modo.Value">@modo.Label</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success btn-lg" id="btnGuardar">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
